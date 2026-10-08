@@ -34,7 +34,7 @@ The root `.cursor-plugin/plugin.json` and `mcp.json` form a Cursor plugin. For a
 
 ## Grok Build
 
-Load this repository with `grok --plugin-dir /absolute/path/to/reach-skills`. The root plugin.json, skills/ and .mcp.json use Grok Build's documented plugin layout. Open `/mcps` to authenticate Reach. Alternatively merge grok-config.toml.example into your Grok configuration and install the skill folders separately; choose one setup to avoid duplicate servers. See [Grok Build plugin docs](https://docs.x.ai/build/features/skills-plugins-marketplaces) and [MCP docs](https://docs.x.ai/build/features/mcp-servers).
+Load this repository with `grok --plugin-dir /absolute/path/to/reach-skills`. The .grok-plugin/plugin.json manifest, skills/ and .mcp.json use Grok Build's documented plugin layout. Open `/mcps` to authenticate Reach. Alternatively merge grok-config.toml.example into your Grok configuration and install the skill folders separately; choose one setup to avoid duplicate servers. See [Grok Build plugin docs](https://docs.x.ai/build/features/skills-plugins-marketplaces) and [MCP docs](https://docs.x.ai/build/features/mcp-servers).
 
 ## MCP Registry
 
