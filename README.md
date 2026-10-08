@@ -1,0 +1,49 @@
+# Reach by Locus: Google Business Profile skills
+
+Six Agent Skills for managing Google Business Profile through the Reach remote MCP server.
+
+## Install skills
+
+```sh
+npx skills add LocusIntelligence-DauAgency/reach-skills
+```
+
+The skills CLI lets you choose your agent. See [official CLI documentation](https://skills.sh/docs/cli). This repository includes instructions and remote client manifests only.
+
+## Connect Reach
+
+- URL: `https://reach.locus-intelligence.com/api/mcp`
+- Transport: Streamable HTTP
+- Authentication: browser OAuth using your own Reach account; no API key
+- Connect your Google Business Profile in Reach for connected account data and profile management. Features depend on account access and connection state.
+
+See [SETUP.md](SETUP.md) and the [Reach MCP setup guide](https://reach.locus-intelligence.com/google-business-profile-mcp).
+
+## Six skills
+
+- [competitor-watch](skills/competitor-watch/SKILL.md)
+- [gbp-weekly-report](skills/gbp-weekly-report/SKILL.md)
+- [local-rank-audit](skills/local-rank-audit/SKILL.md)
+- [optimize-google-business-profile](skills/optimize-google-business-profile/SKILL.md)
+- [reply-to-google-reviews](skills/reply-to-google-reviews/SKILL.md)
+- [write-gbp-post](skills/write-gbp-post/SKILL.md)
+
+## Cursor
+
+The root `.cursor-plugin/plugin.json` and `mcp.json` form a Cursor plugin. For a local installation, place the repository in a local Cursor plugin directory according to the [official plugin reference](https://cursor.com/docs/reference/plugins). Authenticate Reach in MCP settings.
+
+## Grok Build
+
+Load this repository with `grok --plugin-dir /absolute/path/to/reach-skills`. The root plugin.json, skills/ and .mcp.json use Grok Build's documented plugin layout. Open `/mcps` to authenticate Reach. Alternatively merge grok-config.toml.example into your Grok configuration and install the skill folders separately; choose one setup to avoid duplicate servers. See [Grok Build plugin docs](https://docs.x.ai/build/features/skills-plugins-marketplaces) and [MCP docs](https://docs.x.ai/build/features/mcp-servers).
+
+## MCP Registry
+
+server.json describes the hosted remote MCP endpoint. It contains no installable server package or backend source. Registry publication requires separate namespace authentication.
+
+## Approval and evidence
+
+Read data before proposing changes. Publishing review replies, posts or profile updates requires approval of the exact text or before-and-after change. Keyword tracking requires explicit approval too. Respect Reach permissions, tool limitations and Google connection requirements. Never invent performance, rankings, business details or missing data.
+
+## License
+
+[MIT](LICENSE) covers these skills, manifests and setup documentation. The original Growthnomics Technologies Private Limited copyright notice is preserved. The hosted Reach service, backend code, customer data, trademarks and third-party content are outside this distribution license. Reach by Locus is product branding, not a declaration resolving the publisher's legal entity.

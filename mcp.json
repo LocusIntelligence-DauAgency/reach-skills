@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "reach": {
+      "url": "https://reach.locus-intelligence.com/api/mcp"
+    }
+  }
+}

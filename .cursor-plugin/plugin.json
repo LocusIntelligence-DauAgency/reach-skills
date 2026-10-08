@@ -1,0 +1,11 @@
+{
+  "name": "reach",
+  "version": "1.0.0",
+  "description": "Google Business Profile review replies, posts, profile improvements, reporting, rankings and competitor monitoring through Reach.",
+  "author": {
+    "name": "Reach by Locus"
+  },
+  "homepage": "https://reach.locus-intelligence.com/google-business-profile-mcp",
+  "license": "MIT",
+  "repository": "https://github.com/LocusIntelligence-DauAgency/reach-skills"
+}
