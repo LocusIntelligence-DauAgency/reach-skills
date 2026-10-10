@@ -1,6 +1,6 @@
 # Reach by Locus: Google Business Profile skills
 
-Six Agent Skills for managing Google Business Profile through the Reach remote MCP server.
+Agent Skills for managing Google Business Profile through the Reach remote MCP server.
 
 ## Install skills
 
@@ -19,14 +19,42 @@ The skills CLI lets you choose your agent. See [official CLI documentation](http
 
 See [SETUP.md](SETUP.md) and the [Reach MCP setup guide](https://reach.locus-intelligence.com/google-business-profile-mcp).
 
-## Six skills
+## Skills
 
-- [competitor-watch](skills/competitor-watch/SKILL.md)
-- [gbp-weekly-report](skills/gbp-weekly-report/SKILL.md)
-- [local-rank-audit](skills/local-rank-audit/SKILL.md)
-- [optimize-google-business-profile](skills/optimize-google-business-profile/SKILL.md)
-- [reply-to-google-reviews](skills/reply-to-google-reviews/SKILL.md)
-- [write-gbp-post](skills/write-gbp-post/SKILL.md)
+Read-only skills never change anything. Skills that write show the exact change first and act only on the owner's explicit yes.
+
+**Reviews and customers**
+
+- [reply-to-google-reviews](skills/reply-to-google-reviews/SKILL.md): answer unanswered reviews
+- [review-insights](skills/review-insights/SKILL.md): themes across all reviews (read-only)
+- [review-request-kit](skills/review-request-kit/SKILL.md): review link and request message for customers (sends nothing)
+- [lead-follow-up](skills/lead-follow-up/SKILL.md): new leads and booking requests with follow-up drafts (read-only)
+
+**Profile**
+
+- [optimize-google-business-profile](skills/optimize-google-business-profile/SKILL.md): find and fix profile gaps
+- [categories-and-service-area](skills/categories-and-service-area/SKILL.md): additional categories and service area
+- [holiday-hours](skills/holiday-hours/SKILL.md): special hours for upcoming holidays
+- [gbp-photo-refresh](skills/gbp-photo-refresh/SKILL.md): add and retire profile photos
+- [add-local-business-schema](skills/add-local-business-schema/SKILL.md): LocalBusiness structured data for your website, from the live profile
+
+**Posts**
+
+- [write-gbp-post](skills/write-gbp-post/SKILL.md): one post, offer or event
+- [gbp-post-calendar](skills/gbp-post-calendar/SKILL.md): plan and schedule a month of posts
+
+**Search visibility**
+
+- [local-rank-audit](skills/local-rank-audit/SKILL.md): Google Maps and local search rankings
+- [keyword-picker](skills/keyword-picker/SKILL.md): choose which keywords to track
+- [not-showing-on-maps](skills/not-showing-on-maps/SKILL.md): diagnose a missing Maps listing (read-only)
+- [competitor-watch](skills/competitor-watch/SKILL.md): nearby rivals and how they changed (read-only)
+
+**Reporting and planning**
+
+- [gbp-weekly-report](skills/gbp-weekly-report/SKILL.md): this week against last week (read-only)
+- [multi-location-report](skills/multi-location-report/SKILL.md): one table across every location (read-only)
+- [growth-plan](skills/growth-plan/SKILL.md): work through Reach's growth recommendations
 
 ## Cursor
 
