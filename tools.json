@@ -1,0 +1,1508 @@
+{
+  "server": {
+    "name": "com.locus-intelligence.reach/google-business-profile",
+    "title": "Reach: Google Business Profile MCP server",
+    "version": "1.0.0",
+    "url": "https://reach.locus-intelligence.com/api/mcp"
+  },
+  "tools": [
+    {
+      "name": "get_account",
+      "title": "Get Reach account",
+      "description": "Start here. Read-only snapshot of the Reach account: plan, location slots and Credits balance; locations and public listings with their ids; each location's Google connection state; feature availability. A 'waitlist' feature (calls, ads) is not built yet: never present it as usable. If a location's connectionStatus is not 'active', tell the owner to reconnect Google in Reach (Connections page) and stop working on that location. status 'onboarding_required' carries the URL where the owner connects a profile. Talk about usage in slots and Credits, never money. Read every page of locations before saying which exist. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "include": {
+            "description": "Sections to return; omit for all four.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "plan",
+                "locations",
+                "connection",
+                "features"
+              ]
+            }
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per page. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "annotations": {
+        "title": "Get Reach account",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_listing",
+      "title": "Get GBP listing",
+      "description": "Read-only content of one Google Business Profile listing: profile (name, categories, hours, services, attributes), reviews (stats and a filtered list with reply status), posts (totals and scheduled posts) and media. Use it for what the listing says and what customers say, and to read back after a write. For search rank use get_visibility, for traffic get_performance, for what is missing get_recommendations. A location added from its public listing returns only that public 'listing' snapshot. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null. Non-empty 'limitations' means data is hidden: relay each message and its connectUrl or manageUrl; say 'no data' only when it is empty.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "sections": {
+            "description": "Sections to return; omit for all four.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "profile",
+                "reviews",
+                "posts",
+                "media"
+              ]
+            }
+          },
+          "reviewFilter": {
+            "description": "Filters the 'reviews' section. replyStatus 'not_replied' lists unanswered reviews.",
+            "type": "object",
+            "properties": {
+              "sentiment": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "POS",
+                    "NEG",
+                    "NEU"
+                  ]
+                }
+              },
+              "replyStatus": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "replied",
+                  "not_replied"
+                ]
+              },
+              "search": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "startDate": {
+                "description": "Defaults to 90 days before endDate.",
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "endDate": {
+                "description": "Defaults to now.",
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            }
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per list. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "locationId"
+        ]
+      },
+      "annotations": {
+        "title": "Get GBP listing",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_visibility",
+      "title": "Get search visibility",
+      "description": "Read-only search visibility for one location: tracked-keyword rank summary, per-keyword rank history, nearby competitor comparison and the local search grid. Use it for rank and competitor questions; use get_performance for traffic. Covers tracked keywords only (see track_keywords). Competitor searches: 10 per page. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "sections": {
+            "description": "Sections to return; omit for all four. 'rankings' gives daily history for named 'keywords', else one series covering every tracked keyword.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "summary",
+                "rankings",
+                "competitors",
+                "grid"
+              ]
+            }
+          },
+          "keywords": {
+            "description": "Tracked keywords for 'rankings' (first 10 used) and 'competitors' (first one narrows it). Omit for the cheaper all-keywords series.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "surface": {
+            "description": "Restricts 'rankings' rows to one search surface.",
+            "type": "string",
+            "enum": [
+              "local_finder",
+              "grid"
+            ]
+          },
+          "days": {
+            "description": "Lookback window in days for 'rankings'. Defaults to 90, max 730 (daily history).",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 730
+          },
+          "rivalCid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "A competitor 'cid' from a prior 'competitors' result; adds its 12-month rating/photo history."
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per list. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "locationId"
+        ]
+      },
+      "annotations": {
+        "title": "Get search visibility",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_performance",
+      "title": "Get GBP performance analytics",
+      "description": "Read-only Google Business Profile performance for one location and date range: impressions, customer actions, trends, projections, channel split and top search terms. Use it for traffic and engagement; use get_visibility for rank. The full history is available, so the range is served as requested. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null. Non-empty 'limitations' means data is hidden: relay each message and its connectUrl or manageUrl; say 'no data' only when it is empty. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "dateRange": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
+                "description": "YYYY-MM-DD, inclusive."
+              },
+              "end": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))$",
+                "description": "YYYY-MM-DD, inclusive."
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ]
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per page. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "locationId",
+          "dateRange"
+        ]
+      },
+      "annotations": {
+        "title": "Get GBP performance analytics",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_customers",
+      "title": "Get leads and bookings",
+      "description": "Read-only leads and booking requests for one location. 'leads' merges repeat requests from the same person (matched by phone, email or name) into one customer; 'bookings' is the raw request log. Phone numbers are masked to the last 4 digits, inside notes too: never try to reconstruct or report a full number. Emails are not masked. A lead lists its 10 newest requests; request_count is the true total. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "type": {
+            "description": "Defaults to both. 'leads' = deduplicated customers; 'bookings' = raw request log.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "leads",
+                "bookings"
+              ]
+            }
+          },
+          "status": {
+            "description": "Exact-match status filter, e.g. 'new' or 'completed'.",
+            "type": "string",
+            "maxLength": 60
+          },
+          "dateRange": {
+            "description": "Inclusive createdAt window.",
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z))$"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ]
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per list. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "locationId"
+        ]
+      },
+      "annotations": {
+        "title": "Get leads and bookings",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "setup_reach",
+      "title": "Set up Reach skills and scheduled reports",
+      "description": "Use when the owner asks to set up Reach in this assistant, or says yes to setting it up. Returns the recommended setup: the Reach skills to install and a weekly report and a daily review check this assistant can schedule (task text with the account's locations filled in). Show the owner what it would set up and install or schedule only what they agree to. The tool itself changes nothing and never uses up a monthly call.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "client": {
+            "description": "The client you are running in, for its exact skills command. Omit if unsure.",
+            "type": "string",
+            "enum": [
+              "claude_code",
+              "codex",
+              "cursor",
+              "antigravity",
+              "windsurf",
+              "vscode",
+              "cline",
+              "gemini_cli",
+              "hermes",
+              "claude",
+              "chatgpt",
+              "other"
+            ]
+          }
+        }
+      },
+      "annotations": {
+        "title": "Set up Reach skills and scheduled reports",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_listing",
+      "title": "Update GBP listing",
+      "description": "Change profile fields and/or the service area of one Google Business Profile listing. Public on Google once written. First call with preview: true (the default) and show the user each changed field's before and after; get an explicit yes for that change, never one vague yes for many fields; then call with preview: false and the basedOn the preview returned. If the listing changed since the preview the write is refused: preview again. Settable: additionalCategories, description, openingDate, primaryPhone, additionalPhones, websiteUri, actionLinks, socialLinks, messagingLinks, regularHours, specialHours, services, attributeValues. The business name, primaryCategory and address cannot be changed from Reach (the owner changes them on Google); photos are manage_media. Service area is add/remove place names (1 to 20 places). The write sends exactly the preview's willSend fields; tell the user each willSkip field and its reason before they confirm. If the preview shows stagedDashboardEdits (edits saved in Reach, never sent), show them separately and set includeStagedEdits only after the user approves those too. If the preview lists invalidFields, tell the user what to fix; the write is refused until they are fixed. After writing, relay published.message, then report published.applied (live on Google), pending (Google took it but does not show it yet: never call these live), skipped and failed as they are, then read back with get_listing. Counts toward 20 Google writes per hour per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "changes": {
+            "type": "object",
+            "properties": {
+              "profile": {
+                "type": "object",
+                "properties": {
+                  "additionalCategories": {
+                    "maxItems": 9,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    }
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 750
+                  },
+                  "openingDate": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "primaryPhone": {
+                    "type": "string",
+                    "maxLength": 60
+                  },
+                  "additionalPhones": {
+                    "maxItems": 2,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 60
+                    }
+                  },
+                  "websiteUri": {
+                    "type": "string",
+                    "maxLength": 500
+                  },
+                  "actionLinks": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "appointment",
+                            "online_order",
+                            "shop_online",
+                            "reservation",
+                            "menu",
+                            "other"
+                          ]
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "url"
+                      ]
+                    }
+                  },
+                  "socialLinks": {
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "platform": {
+                          "type": "string",
+                          "enum": [
+                            "instagram",
+                            "facebook",
+                            "x",
+                            "youtube",
+                            "tiktok",
+                            "linkedin",
+                            "pinterest"
+                          ]
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "url"
+                      ]
+                    }
+                  },
+                  "messagingLinks": {
+                    "type": "object",
+                    "properties": {
+                      "whatsapp": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "textMessaging": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "whatsapp",
+                      "textMessaging"
+                    ]
+                  },
+                  "regularHours": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "day": {
+                          "type": "string",
+                          "enum": [
+                            "MONDAY",
+                            "TUESDAY",
+                            "WEDNESDAY",
+                            "THURSDAY",
+                            "FRIDAY",
+                            "SATURDAY",
+                            "SUNDAY"
+                          ]
+                        },
+                        "closed": {
+                          "type": "boolean"
+                        },
+                        "periods": {
+                          "maxItems": 4,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "string"
+                              },
+                              "close": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "open",
+                              "close"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "day",
+                        "closed",
+                        "periods"
+                      ]
+                    }
+                  },
+                  "specialHours": {
+                    "maxItems": 60,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "date": {
+                          "type": "string"
+                        },
+                        "closed": {
+                          "type": "boolean"
+                        },
+                        "open": {
+                          "type": "string"
+                        },
+                        "close": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "date",
+                        "closed",
+                        "open",
+                        "close"
+                      ]
+                    }
+                  },
+                  "services": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "serviceTypeId": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "maxLength": 200
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "priceText": {
+                          "type": "string"
+                        },
+                        "price": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "currencyCode": {
+                                  "type": "string",
+                                  "maxLength": 10
+                                },
+                                "units": {
+                                  "type": "string",
+                                  "maxLength": 30
+                                },
+                                "nanos": {
+                                  "type": "integer",
+                                  "minimum": -9007199254740991,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "currencyCode",
+                                "units"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "priceText",
+                        "description"
+                      ]
+                    }
+                  },
+                  "attributeValues": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string"
+                    },
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "maxItems": 40,
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "maxLength": 120
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "serviceArea": {
+                "type": "object",
+                "properties": {
+                  "add": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    }
+                  },
+                  "remove": {
+                    "maxItems": 20,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "preview": {
+            "default": true,
+            "description": "Never writes when true. Defaults to true.",
+            "type": "boolean"
+          },
+          "publishMode": {
+            "description": "Deprecated and ignored; omit it.",
+            "type": "string",
+            "enum": [
+              "patch",
+              "all"
+            ]
+          },
+          "basedOn": {
+            "description": "Required on every non-preview call; the `basedOn` a prior preview returned.",
+            "type": "string"
+          },
+          "includeStagedEdits": {
+            "description": "Only set true after the caller has separately seen and approved this account's 'stagedDashboardEdits' (from a prior preview) — never invent this approval.",
+            "type": "boolean"
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "locationId",
+          "changes"
+        ]
+      },
+      "annotations": {
+        "title": "Update GBP listing",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "manage_media",
+      "title": "Manage GBP media",
+      "description": "Upload or delete photos and videos on one Google Business Profile listing. Public on Google; a delete cannot be undone here. First call with preview: true (the default) and show the user what will be added or removed, including before.replacedHeroMedia (a COVER or LOGO upload replaces the current image); get an explicit yes; then call with preview: false. Delete takes mediaKeys: the ids from get_listing's media section. Categories Google explicitly refused for this location are unavailable; the tool lists the remaining choices. External photos are copied to our storage as validated JPEG/PNG before Google is called. The worker checks eligibility for the authorized location before upload. PRODUCT, FOOD_AND_DRINK and MENU use Google’s own editors. Report result.errors as failures, including googleErrorDescription when present. Counts toward 20 Google writes per hour per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "delete"
+            ]
+          },
+          "uploads": {
+            "description": "Required for action: 'upload'.",
+            "maxItems": 50,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string",
+                  "enum": [
+                    "COVER",
+                    "LOGO",
+                    "EXTERIOR",
+                    "INTERIOR",
+                    "AT_WORK",
+                    "COMMON_AREA",
+                    "ROOMS",
+                    "TEAMS",
+                    "ADDITIONAL"
+                  ]
+                },
+                "sourceUrl": {
+                  "type": "string",
+                  "maxLength": 2000,
+                  "format": "uri"
+                },
+                "mediaFormat": {
+                  "type": "string",
+                  "enum": [
+                    "PHOTO",
+                    "VIDEO"
+                  ]
+                }
+              },
+              "required": [
+                "category",
+                "sourceUrl",
+                "mediaFormat"
+              ]
+            }
+          },
+          "mediaKeys": {
+            "description": "Required for action: 'delete'.",
+            "maxItems": 200,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 400
+            }
+          },
+          "preview": {
+            "default": true,
+            "description": "Never writes when true. Defaults to true.",
+            "type": "boolean"
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "locationId",
+          "action"
+        ]
+      },
+      "annotations": {
+        "title": "Manage GBP media",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "publish_post",
+      "title": "Publish GBP post",
+      "description": "Publish a Google Business Profile post now, or at a scheduled local time. Public once published; there is no preview and no delete tool. Before calling, show the user the exact post (text, type, button, image, time and timezone) and get an explicit yes. 'schedule' counts toward the account's scheduled-post limit; ask the user for the timezone, never guess it. Counts toward 20 Google writes per hour per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. Monthly MCP usage is pooled across all clients and tools; changing clients never restores calls.  On reason 'limit_reached' or 'monthly_quota_exhausted', relay the message and manageUrl, and stop: never retry or work around it. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1500
+              },
+              "topicType": {
+                "type": "string",
+                "enum": [
+                  "STANDARD",
+                  "OFFER",
+                  "EVENT"
+                ]
+              },
+              "event": {
+                "description": "Required when topicType is 'EVENT' or 'OFFER'.",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "properties": {
+                      "startDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
+                      }
+                    },
+                    "required": [
+                      "startDate",
+                      "startTime",
+                      "endDate",
+                      "endTime"
+                    ]
+                  }
+                },
+                "required": [
+                  "title",
+                  "schedule"
+                ]
+              },
+              "offer": {
+                "type": "object",
+                "properties": {
+                  "couponCode": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "redeemOnlineUrl": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "termsConditions": {
+                    "type": "string",
+                    "maxLength": 1000
+                  }
+                }
+              },
+              "mediaUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "summary"
+            ]
+          },
+          "schedule": {
+            "description": "Omit to publish immediately.",
+            "type": "object",
+            "properties": {
+              "forLocal": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$",
+                "description": "YYYY-MM-DDTHH:mm, local time."
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Required IANA timezone (e.g. 'America/Los_Angeles') that 'forLocal' is relative to. Ask the caller for it — this tool never guesses or defaults it."
+              }
+            },
+            "required": [
+              "forLocal",
+              "timezone"
+            ]
+          },
+          "cta": {
+            "type": "object",
+            "properties": {
+              "actionType": {
+                "type": "string",
+                "enum": [
+                  "BOOK",
+                  "ORDER",
+                  "SHOP",
+                  "LEARN_MORE",
+                  "SIGN_UP",
+                  "CALL"
+                ]
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "actionType"
+            ]
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "locationId",
+          "content"
+        ]
+      },
+      "annotations": {
+        "title": "Publish GBP post",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "draft_review_reply",
+      "title": "Draft a review reply",
+      "description": "Draft reply options for one Google review. Uses 2 Credits per call (result: cost, remaining); posts nothing. Use it when the owner wants help writing; use reply_to_review to post the text they choose or edit. reviewId comes from get_listing's reviews section. At most 3 drafts or keyword-tracking runs at once per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. Monthly MCP usage is pooled across all clients and tools; changing clients never restores calls.  On reason 'limit_reached' or 'monthly_quota_exhausted', relay the message and manageUrl, and stop: never retry or work around it. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "reviewId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Review id from get_listing's reviews list."
+          },
+          "tone": {
+            "description": "Best-effort preference among the generated options; does not change what is generated.",
+            "type": "string",
+            "maxLength": 60
+          },
+          "idempotencyKey": {
+            "description": "Accepted for request compatibility, but not used for deduplication: every call, including repeats with the same key, generates new reply options and consumes the per-call credit cost.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "reviewId"
+        ]
+      },
+      "annotations": {
+        "title": "Draft a review reply",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "reply_to_review",
+      "title": "Reply to a review",
+      "description": "Post a reply to a Google review, replacing any existing reply. Public and permanent: it shows under the review, and calling again replaces it; no tool removes it. Before calling, show the user the exact text and the current reply if there is one, and get an explicit yes. 'before' in the result is the reply it replaced. Relay 'message': the reply is public only when 'outcome' is live; pending_review means Google is checking it. Counts toward 20 Google writes per hour per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "reviewId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Review id from get_listing's reviews list."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "reviewId",
+          "text"
+        ]
+      },
+      "annotations": {
+        "title": "Reply to a review",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "track_keywords",
+      "title": "Track or untrack keywords",
+      "description": "Start or stop tracking keywords on one location. Each tracked keyword gets a list rank and a weekly map scan, and uses one of the location's keyword slots; untracking freesone. Get the user's yes before 'track'. The change is queued (status 'queued', requestId) and lands within a minute: say it is queued, then read back with get_visibility. Report usage as the result's keyword counts (usageMessage), never money. A new keyword has no rank until its first check runs. At most 3 keyword-tracking runs or drafts at once per business. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away. Monthly MCP usage is pooled across all clients and tools; changing clients never restores calls.  On reason 'limit_reached' or 'monthly_quota_exhausted', relay the message and manageUrl, and stop: never retry or work around it. On reason 'listing_only' (public listing, no Google connection), relay the message and connectUrl, and stop.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "Reach location id from get_account."
+          },
+          "keywords": {
+            "minItems": 1,
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "track",
+              "untrack"
+            ]
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "locationId",
+          "keywords",
+          "action"
+        ]
+      },
+      "annotations": {
+        "title": "Track or untrack keywords",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "send_feedback",
+      "title": "Send feedback to the Reach team",
+      "description": "Send the Reach team the user's own feedback (idea, problem, praise, other), including a feature Reach lacks. Write it in their words, show it, send after they confirm. Never ask for name, phone or email. Free of monthly quota; 10/day. Relay the returned message. On reason 'rate_limited', tell the user retryAfterSeconds and do not retry right away.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "problem",
+              "praise",
+              "other"
+            ],
+            "description": "idea: something to build or change. problem: something annoying or broken. praise: what worked."
+          },
+          "message": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 4000,
+            "description": "The feedback exactly as the user confirmed it, in their words."
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "type",
+          "message"
+        ]
+      },
+      "annotations": {
+        "title": "Send feedback to the Reach team",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "request_feature",
+      "title": "Send a feature request to the Reach team",
+      "description": "Deprecated: use send_feedback with type idea. Same behaviour.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "feature": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 2000,
+            "description": "The request exactly as the user confirmed it. No personal details."
+          },
+          "context": {
+            "description": "What the user was trying to do when they asked, if it helps the team.",
+            "type": "string",
+            "maxLength": 1000
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "feature"
+        ]
+      },
+      "annotations": {
+        "title": "Send a feature request to the Reach team",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "report_issue",
+      "title": "Report a Reach MCP problem",
+      "description": "Report MCP failures: goal, expected/actual results, steps, error code and retries. Omit customer content, names, addresses, IDs, raw arguments/transcripts/headers, tokens and attachments. Patterns are scrubbed; prose is not guaranteed anonymous. Retained 90 days. Free of monthly quota; 5/day. Reuse idempotencyKey; relay report_id, saved and email_delivery_status.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "tool": {
+            "type": "string",
+            "enum": [
+              "get_account",
+              "get_listing",
+              "get_visibility",
+              "get_performance",
+              "get_customers",
+              "get_recommendations",
+              "update_listing",
+              "manage_media",
+              "publish_post",
+              "reply_to_review",
+              "draft_review_reply",
+              "track_keywords",
+              "request_feature",
+              "send_feedback",
+              "report_issue",
+              "update_recommendation_status",
+              "setup_reach"
+            ]
+          },
+          "report": {
+            "type": "object",
+            "properties": {
+              "goal": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "expected": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "actual": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "steps": {
+                "minItems": 1,
+                "maxItems": 12,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              },
+              "errorCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "retrySummary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "goal",
+              "expected",
+              "actual",
+              "steps"
+            ],
+            "additionalProperties": false
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "report"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Report a Reach MCP problem",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "get_recommendations",
+      "title": "Get growth recommendations",
+      "description": "Read-only list of what a location is missing (profile fields, reviews, posts, media, performance), each with evidence. Use it to decide what to improve; use get_listing for current content. Each item's actionability: 'agent_can_fix' = you can do it with the tool named in 'fix' (follow its note), so offer it; 'needs_owner_input' = ask the owner for the substance (a phone number, photos, what to post); 'needs_setup' = blocked outside these tools, explain without pushing. readiness 'never_run' means not scored yet, not 'nothing missing'. Paused locations appear with pauseReason. Never add gaps that are not in the response. Lists are paged: pass a 'paging' nextCursor back as 'cursor' (same other arguments) until it is null. Non-empty 'limitations' means data is hidden: relay each message and its connectUrl or manageUrl; say 'no data' only when it is empty.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "locationId": {
+            "description": "Reach location id from get_account. Omit for every active or paused location.",
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          },
+          "categories": {
+            "description": "Only these categories. Omit for all.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "profile_health",
+                "reviews",
+                "bookings",
+                "microsite",
+                "growth"
+              ]
+            }
+          },
+          "includeCompleted": {
+            "description": "Also return completed items. Dismissed items are never returned.",
+            "type": "boolean"
+          },
+          "cursor": {
+            "description": "A 'paging' nextCursor; returns that list's next page.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          },
+          "limit": {
+            "default": 25,
+            "description": "Rows per page. Default 25, max 100.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "annotations": {
+        "title": "Get growth recommendations",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "update_recommendation_status",
+      "title": "Update growth recommendation status",
+      "description": "Mark one get_recommendations item 'completed' or 'dismissed'. Changes Reach only, nothing public. taskId must come from get_recommendations. Mark 'completed' only after the fix is done and read back; 'dismissed' only when the owner asks. status 'not_found' means the task is not this account's or its location is gone.",
+      "inputSchema": {
+        "type": "object",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "description": "The 'taskId' field from a get_recommendations item."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "dismissed"
+            ]
+          },
+          "idempotencyKey": {
+            "description": "Retry key: a repeat with the same key returns the first result instead of changing anything again.",
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "taskId",
+          "status"
+        ]
+      },
+      "annotations": {
+        "title": "Update growth recommendation status",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "name": "set_up_reach",
+      "title": "Set up Reach reports and skills",
+      "description": "See the recommended Reach setup for this assistant (skills, a weekly report, a daily review check) and choose what to add."
+    },
+    {
+      "name": "optimise_my_profile",
+      "title": "Optimise my Google profile",
+      "description": "Find what the listing is missing and fix it one confirmed change at a time.",
+      "arguments": [
+        {
+          "name": "locationId",
+          "description": "Reach location id. Omit to choose from the account.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "review_my_visibility",
+      "title": "Review my search visibility",
+      "description": "An honest read on search rank, competitors and profile traffic.",
+      "arguments": [
+        {
+          "name": "locationId",
+          "description": "Reach location id. Omit to choose from the account.",
+          "required": false
+        },
+        {
+          "name": "range",
+          "description": "Period to review, e.g. 'last 28 days' or '2026-06-01 to 2026-08-31'. Defaults to the last 90 days.",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "handle_my_reviews",
+      "title": "Handle my reviews",
+      "description": "Find unanswered reviews, draft replies, and post the ones I approve.",
+      "arguments": [
+        {
+          "name": "locationId",
+          "description": "Reach location id. Omit to choose from the account.",
+          "required": false
+        }
+      ]
+    }
+  ]
+}

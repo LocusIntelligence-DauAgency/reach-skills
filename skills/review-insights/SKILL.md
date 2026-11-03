@@ -53,6 +53,6 @@ Free tool: [review reply inbox](https://reach.locus-intelligence.com/tools/revie
 - Say how many reviews the report covers. Do not generalize beyond them.
 - Stop if the location's `connectionStatus` is not `active`.
 - Read `limitations` before saying there is no data.
-- On `rate_limited`, give `retryAfterSeconds` and do not retry right away. On an upgrade refusal, say what was blocked and which plan (`requiredPlan`) allows it, point to Plans in Reach, and stop. On `listing_only`, relay the message and `connectUrl`, and stop.
+- On `rate_limited`, give `retryAfterSeconds` and do not retry right away. On `limit_reached` or `monthly_quota_exhausted`, say what was blocked, give the `manageUrl`, and stop. On `listing_only`, relay the message and `connectUrl`, and stop.
 - Talk about usage in Credits, never money.
 - If the owner asks for something Reach cannot do, offer to send it to the Reach team with `request_feature`: write the request in their words, show it, and send only after they confirm the wording.

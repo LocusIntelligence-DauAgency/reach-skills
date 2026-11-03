@@ -1,0 +1,30 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Google Business Profile",
+      "description": "Manage a Google Business Profile (GMB) with the Reach MCP server: reviews, posts, profile fixes, reports, rankings and competitors.",
+      "skills": [
+        "reply-to-google-reviews",
+        "optimize-google-business-profile",
+        "write-gbp-post",
+        "gbp-weekly-report",
+        "local-rank-audit",
+        "competitor-watch",
+        "review-insights",
+        "review-request-kit",
+        "gbp-post-calendar",
+        "gbp-photo-refresh",
+        "holiday-hours",
+        "categories-and-service-area",
+        "keyword-picker",
+        "growth-plan",
+        "lead-follow-up",
+        "multi-location-report",
+        "not-showing-on-maps",
+        "add-local-business-schema"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "google-business-profile-mcp",
+  "interface": {
+    "displayName": "Reach: Google Business Profile"
+  },
+  "plugins": [
+    {
+      "name": "reach",
+      "source": {
+        "source": "local",
+        "path": "./plugins/reach"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

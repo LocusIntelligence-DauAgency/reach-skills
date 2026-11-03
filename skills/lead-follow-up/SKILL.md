@@ -28,18 +28,18 @@ Leads come from the booking form on the owner's Reach website.
 ## Steps
 
 1. **Pick the location.** Call `get_account`. If there is more than one location, ask which one. If `connectionStatus` is not `active`, tell the owner to reconnect Google in Reach (Connections page) and stop.
-2. **Choose the view.** Use `type: ["leads"]` for people: repeat requests from the same person are merged into one customer with `request_count`. Use `type: ["bookings"]` for the raw request log, with `source`, `notes` and `viewed_at`. Default to leads; offer bookings if the owner wants the raw log.
+2. **Choose the view.** Use `type: ["leads"]` for people: repeat requests from the same person are merged into one customer with `request_count`. Use `type: ["bookings"]` for the raw request log, with `source`, `notes` and viewed_at. Default to leads; offer bookings if the owner wants the raw log.
 3. **Fetch.** Call `get_customers` with the `locationId`. Add `status: "new"` to see only new ones (exact match; other values are whatever statuses the owner uses). Add `dateRange: { start, end }` (ISO date-times) for a period. `limit` defaults to 100, max 200.
-4. **Sort.** Newest `created_at` first. Put new or unviewed requests (`status` new, `viewed_at` empty on bookings) before handled ones. Show at most 10 at a time: name, service (may be empty), preferred date and time, status, how long ago, request count.
+4. **Sort.** Newest created_at first. Put new or unviewed requests (`status` new, viewed_at empty on bookings) before handled ones. Show at most 10 at a time: name, service (may be empty), preferred date and time, status, how long ago, request count.
 5. **Draft a follow-up per lead** the owner picks, using the rules below. Show each draft as plain text the owner can copy.
 6. **Say what was not covered.** If the list was cut by `limit`, say so and offer the next window by `dateRange`.
 
 ## Writing the message
 
 - Two to four sentences, in the language the lead wrote in or the owner asks for.
-- Use the name and the service or preferred slot only if the data shows them. If `service_name` is null, do not guess a service.
+- Use the name and the service or preferred slot only if the data shows them. If service_name is null, do not guess a service.
 - Offer one next step: confirm the slot, or ask for a time that suits. Never invent prices, availability, discounts or an address.
-- Give one version for WhatsApp or SMS (very short) and one for email if `customer_email` is present. Emails are not masked; use the one returned.
+- Give one version for WhatsApp or SMS (very short) and one for email if customer_email is present. Emails are not masked; use the one returned.
 
 ## Phone numbers
 

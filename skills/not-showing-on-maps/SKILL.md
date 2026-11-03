@@ -25,7 +25,7 @@ Reach by Locus operates this required hosted MCP endpoint; this repository conta
 
 ## Steps
 
-1. **Connection.** Call `get_account`. Read `connection` for the location: `connectionStatus` (`active`, `expired`, `revoked`, `error`, `not_connected`), `connectionError`, `lastSyncAt`, and `grantState` / `pauseReason`. If it is not `active`, report it as cause 1: Reach cannot read the live profile until the owner reconnects Google in Reach (Connections page). Stop there for this location.
+1. **Connection.** Call `get_account`. Read `connection` for the location: `connectionStatus` (`active`, `expired`, `revoked`, `error`, not_connected), `connectionError`, `lastSyncAt`, and `grantState` / `pauseReason`. If it is not `active`, report it as cause 1: Reach cannot read the live profile until the owner reconnects Google in Reach (Connections page). Stop there for this location.
 2. **Profile.** Call `get_listing` with `sections: ["profile"]`. Check `googleSynced`, `mapsUrl` (empty means no Maps page was found), the primary category, additional categories, address, phone, website, hours, description, services, and `serviceAreaPlaces`.
 3. **Rankings.** Call `get_visibility` with `sections: ["summary", "grid"]`. Note tracked keywords with no rank, and grid points with no result. This covers tracked keywords only; if none are tracked, say so.
 4. **Traffic.** Call `get_performance` for the last 28 days and the 28 before. Look for a drop in impressions, and check `limitations`.

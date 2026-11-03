@@ -48,7 +48,7 @@ To check one keyword's rank before spending a slot, use the free [local rank che
 
 - Never call `track_keywords` without an explicit yes to the exact keywords and the action.
 - At most 3 keyword runs or drafts can run at once per business. On `rate_limited`, tell the owner `retryAfterSeconds` and do not retry right away.
-- On an upgrade refusal, say what was blocked and which plan (`requiredPlan`) allows it, point to Plans in Reach, and stop.
+- On `limit_reached` or `monthly_quota_exhausted`, say what was blocked, give the `manageUrl`, and stop.
 - On `listing_only`, relay the message and `connectUrl`, and stop.
 - Talk about usage in keyword counts and Credits, never money.
 - If the owner asks for something Reach cannot do, offer to send it with `request_feature`: show the request wording, omit private customer details, and send only after the owner confirms it.

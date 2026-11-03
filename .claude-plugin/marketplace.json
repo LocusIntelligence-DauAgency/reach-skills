@@ -1,0 +1,15 @@
+{
+  "name": "google-business-profile-mcp",
+  "description": "Reach: Google Business Profile MCP server and skills.",
+  "owner": {
+    "name": "Reach by Locus",
+    "email": "hello@locus-intelligence.com"
+  },
+  "plugins": [
+    {
+      "name": "reach",
+      "source": "./plugins/reach",
+      "description": "Manage a Google Business Profile from your AI assistant: the Reach MCP server plus skills for review replies and insights, posts and post calendars, profile, hours, categories and photo fixes, growth plans, leads, review requests, reports, rankings, Maps visibility, competitors and website schema."
+    }
+  ]
+}

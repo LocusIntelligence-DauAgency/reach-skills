@@ -1,14 +1,27 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.LocusIntelligence-DauAgency/reach",
-  "title": "Reach by Locus",
-  "description": "Google Business Profile reviews, posts, profile updates, performance, rankings and competitors.",
+  "name": "com.locus-intelligence.reach/google-business-profile",
+  "title": "Reach: Google Business Profile MCP server",
+  "description": "Google Business Profile MCP server: reviews, replies, posts, profile edits and local rankings.",
   "version": "1.0.0",
   "websiteUrl": "https://reach.locus-intelligence.com/google-business-profile-mcp",
+  "repository": {
+    "url": "https://github.com/LocusIntelligence-DauAgency/reach-skills",
+    "source": "github"
+  },
   "remotes": [
     {
       "type": "streamable-http",
       "url": "https://reach.locus-intelligence.com/api/mcp"
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://reach.locus-intelligence.com/reach-mark.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "512x512"
+      ]
     }
   ]
 }
